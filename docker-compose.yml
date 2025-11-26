@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: postgres-sales-analytics
+    environment:
+      POSTGRES_DB: sales_analytics
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init_scripts:/docker-entrypoint-initdb.d
+    networks:
+      - sales-network
+    healthcheck: 
+      test: ["CMD-SHELL", "pg_isready -U postgres -d sales_analytics"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+
+networks:
+  sales-network:
+    driver: bridge
